@@ -8,7 +8,6 @@ class DartBuilder {
 
   String build(Localizations localizations) {
     _library = LibraryBuilder();
-
     _library.body.add(_createLocalization(localizations));
     localizations.categories.forEach((c) => _addCategoryDefinition(c));
     _addSectionDefinition(localizations);
@@ -16,7 +15,15 @@ class DartBuilder {
     // Code generation
     final emitter = DartEmitter();
     final source = '${_library.build().accept(emitter)}';
-    return DartFormatter().format(source);
+    StringBuffer sb = StringBuffer();
+    sb.writeln(
+        "// ignore_for_file: non_constant_identifier_names, omit_local_variable_types");
+    sb.writeln(
+        "// ignore_for_file: unnecessary_brace_in_string_interps, prefer_single_quotes, prefer_const_constructors");
+    sb.writeln(
+        "// ignore_for_file: camel_case_types, unnecessary_this, prefer_generic_function_type_aliases");
+    sb.writeln(DartFormatter().format(source));
+    return sb.toString();
   }
 
   Class _createLocalization(Localizations localizations) {
